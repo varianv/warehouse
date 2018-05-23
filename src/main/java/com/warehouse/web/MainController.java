@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
 	@RequestMapping("/")
 	public String main(Model model) {
-		System.out.println("bisa ga yaa");
 		return "content";
 	}
 }
