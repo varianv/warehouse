@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<th:block th:fragment="btn-validate-reset">
+		<div class="col-md-12" align="center">
+			<button type="submit" class="btn btn-primary" id="btn-validate" th:text="Validate"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="reset" class="btn btn-default" id="btn-reset" th:text="Reset"></button>
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="btn-validate-reset-back">
+		<div class="col-md-12" align="center">
+			<button type="submit" class="btn btn-primary" id="btn-validate-modal" th:text="Validate"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" id="btn-reset-modal" th:text="Reset"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" id="btn-back-modal" th:text="Back"></button>
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="btn-validate-reset-back-inside">
+		<div class="col-md-12" align="center">
+			<button type="submit" class="btn btn-primary" id="btn-validate-modal-inside" th:text="Validate"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" id="btn-reset-modal-inside" th:text="Reset"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" id="btn-back-modal-inside" th:text="Back"></button>
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="btn-back">
+		<div class="col-md-12" align="center">
+			<button type="button" class="btn btn-default" id="btn-back-modal" th:text="Back"></button>
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="btn-add-delete">
+		<div class="col-md-12" align="center">
+			<button type="button" class="btn btn-primary" id="btn-add" th:text="Add"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-danger" id="btn-delete" th:text="Delete"></button> 
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="btn-search-reset">
+		<div class="col-md-12" align="center">
+			<button type="button" class="btn btn-primary" id="btn-search" th:text="Search"></button>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" id="btn-reset-search" th:text="Reset"></button> 
+		</div>
+	</th:block>
+</body>
+</html>

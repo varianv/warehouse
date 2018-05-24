@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:replace="layout :: header"></th:block>
+</head>
+<body>
+	<th:block th:replace="layout :: navbar"></th:block>
+	<th:block th:replace="layout :: sidebar"></th:block>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+				<div class="panel panel-default">
+					<h3 class="page-header" style="font-weight: bold">Inquiry Company</h3>
+					
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Name</label>
+						<div class="col-md-4">
+							<input class="form-control" type="text" id="name" name="name" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Address</label>
+						<div class="col-md-4">
+							<input class="form-control" type="text" id="address" name="address" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Phone Number</label>
+						<div class="col-md-4">
+							<input class="form-control" type="text" id="noPhone" name="noPhone" />
+						</div>
+					</div>
+				
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Status</label>
+						<div class="col-md-4">
+							<select class="form-control" id="status"></select>
+						</div>
+					</div>
+				
+					<div class="form-group row">
+				    	<th:block th:replace="layout :: btn-search-reset"></th:block>
+				    </div>
+				</div>
+				
+				<div class="panel panel-default">
+				    <table id="table"
+				           data-show-refresh="true"
+				           data-show-toggle="true"
+				           data-show-columns="true"
+				           data-show-export="true"
+				           data-show-pagination-switch="true"
+				           data-pagination="true"
+				           data-id-field="id"
+				           data-page-list="[10, 25, 50, 100, ALL]"
+				           data-side-pagination="server"
+				           data-url="">
+						<thead>
+							<tr>
+								<th data-field="name" data-align="center" data-sortable="true">Name</th>
+								<th data-field="address" data-align="center" data-sortable="true">Address</th>
+								<th data-field="noPhone" data-align="center" data-sortable="true">Phone Number</th>
+								<th data-field="status" data-align="center" data-sortable="true">Status</th>
+							</tr>
+						</thead>
+				    </table>
+			    </div>
+			</div>
+		</div>
+		
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		    var $table = $('#table'),
+		        $remove = $('#remove'),
+		        selections = [];
+		
+		    function initTable() {
+		        $table.bootstrapTable();
+		    }
+		    
+			$(document).ready(function () {
+		    	var url = /*[[@{/parameter/getParameterWithAll}]]*/"";
+		    	var name = "COMPANY_STATUS";
+		    	$.ajax({
+			    	type: "GET",
+					contentType: "application/json",
+					url: url+"?name="+name,
+			    	dataType: "json",
+			    	success: function (result) {
+		    			$.each(result, function (key, value) {
+		    				$("#status").append($("<option></option>").val(value.id).html(value.value));
+		    			});
+			    	},
+			    	error: function (result) {
+				    	
+		    		}
+		    	});
+	    	});
+		    
+		    $("#btn-search").click(function() {
+				var name = $("#name").val();
+				var address = $("#address").val();
+				var noPhone = $("#noPhone").val();
+				var status = $("#status :selected").text();
+				var searchURI = /*[[@{/company/inquiry/getCompany}]]*/"";
+				var data = {
+					name: name,
+					address: address,
+					noPhone: noPhone,
+					status: status
+				}
+				$("#table").bootstrapTable("refresh", {
+					url : searchURI+"?"+$.param(data)
+				});
+			});
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

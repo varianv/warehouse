@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+	<title>Warehouse - Create Item</title>
+</head>
+<body class="hold-transition sidebar-mini">
+	<div th:fragment="content">
+		<div class="content-wrapper">
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1>Create Item</h1>
+						</div>
+						<div class="col-sm-6">
+							<ol class="breadcrumb float-sm-right">
+								<li class="breadcrumb-item"><a href="#">Item</a></li>
+								<li class="breadcrumb-item active">Create</li>
+							</ol>
+						</div>
+					</div>
+				</div><!-- /.container-fluid -->
+		    </section>
+		    <section class="content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card card-primary">
+								<div class="card-header">
+									<h3 class="card-title">Create</h3>
+								</div>
+								<div class="card-body">
+									<div class="form-group row">
+										<label class="col-md-1 control-label">Article *</label>
+										<div class="col-md-5">
+											<input class="form-control" type="text" id="article" name="article" required="required" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<label class="col-md-1 control-label">Name *</label>
+										<div class="col-md-5">
+											<input class="form-control" type="text" id="name" name="name" required="required" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<label class="col-md-1 control-label">Unit *</label>
+										<div class="col-md-5">
+											<input class="form-control" type="text" id="unit" name="unit" required="required" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card card-info">
+								<div class="card-header">
+									<h3 class="card-title">Item Detail</h3>
+								</div>
+								<div class="card-body">
+									<table id="table" class="table table-bordered table-striped"
+								           data-show-refresh="true"
+								           data-show-toggle="true"
+								           data-show-columns="true"
+								           data-show-pagination-switch="true"
+								           data-pagination="true"
+								           data-id-field="id"
+								           data-page-list="[10, 25, 50, 100, ALL]"
+								           data-side-pagination="server"
+								           data-url="">
+										<thead>
+											<tr>
+												<th data-field="state" data-checkbox="true"></th>
+												<th data-field="action" data-align="center" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+												<th data-field="colour" data-align="center">Colour</th>
+												<th data-field="price" data-align="center">Price</th>
+											</tr>
+										</thead>
+								    </table>
+							    </div>
+							    
+							    <div class="form-group row">
+							    	<th:block th:replace="common/fragment-button :: btn-add-delete"></th:block>
+							    </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+			<th:block th:replace="common/fragment-button :: btn-validate-reset"></th:block>
+		</div>
+		
+		<div id="modal" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+	        <div class="modal-dialog">
+	            <div class="modal-content col-md-12">
+	            	<form id="createItemDesc" method="POST">
+						<fieldset>
+			                <div class="modal-header">
+			                    <h5 class="modal-title">Item Detail</h5>
+			                	<button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+			                </div>
+			                <div class="modal-body">
+				                <div class="form-group row">
+									<label class="col-md-3 control-label">Item Name</label>
+									<div class="col-md-5">
+										<input class="form-control" type="text" id="modalArticle" name="itemName" readonly="readonly" />
+									</div>
+								</div>
+								
+								<div class="form-group row">
+									<label class="col-md-3 control-label">Colour *</label>
+									<div class="col-md-5">
+										<input class="form-control" type="text" id="modalColour" name="colour" required="required" />
+									</div>
+								</div>
+								
+								<div class="form-group row">
+									<label class="col-md-3 control-label">Price *</label>
+									<div class="col-md-5">
+										<input class="form-control" type="text" id="modalPrice" name="price" required="required" />
+									</div>
+								</div>
+							</div>
+			                <div class="modal-footer">
+			                    <th:block th:replace="common/fragment-button :: btn-validate-reset-back"></th:block>
+			                </div>
+			                <input type="hidden" id="id" name="id" />
+			                <input type="hidden" id="colourTemp" name="colourTemp" />
+			            </fieldset>
+			        </form>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <th:block th:replace="common/fragment-modal :: confirm"></th:block>
+	    <th:block th:replace="common/fragment-modal :: save-success"></th:block>
+	    <th:block th:replace="common/fragment-modal :: save-failed"></th:block>
+		
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		    var $table = $('#table'),
+		    	$modalTable = $('#modalTable'),
+		        $modal = $('#modal').modal({show: false}),
+		        $modalConfirmation = $('#modalConfirmation').modal({show: false}),
+		        $saveSuccess = $('#saveSuccess').modal({show: false}),
+		        $saveFailed = $('#saveFailed').modal({show: false}),
+		        doAction = "";
+			
+		    $(document).ready(function() {
+		    	initSession();
+		    	
+		    	$('#btn-delete').prop('disabled', true);
+		    	
+		    	$table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
+		            $('#btn-delete').prop('disabled', !$table.bootstrapTable('getSelections').length);
+		        });
+		    	
+				$("#btn-add").click(function() {
+					reset();
+					doAction = "add";
+					$modal.modal("show");
+				});
+				
+				$("#btn-reset-modal").click(function() {
+					reset();
+				});
+				
+				$(".close, #btn-back-modal").click(function() {
+					$modal.modal("hide");
+				});
+				
+				$("#modalColour").change(function () {
+					$("#modalColour").tooltip("hide");
+				});
+				
+				$("#createItemDesc").validate({
+			    	submitHandler : function(form) {
+			    		var dataNow = getAllData();
+			    		var isColourExist = false;
+		    			
+			    		if ($("#colourTemp").val().toLowerCase() != $("#modalColour").val().toLowerCase()) {
+				    		for (i = 0; i < dataNow.length; i++) {
+				    			if (dataNow[i].colour.toLowerCase() == $("#modalColour").val().toLowerCase()) {
+				    				isColourExist = true;
+				    				$("#modalColour").tooltip("show");
+				    				break;
+				    			}
+				    		}
+			    		}
+			    		
+			    		if (!isColourExist) {
+			    			var data;
+			    			if (doAction == "add") {
+			    				data = {
+					    			id : guid(),
+				    				colour : $("#modalColour").val(),
+				    				price : $("#modalPrice").val()
+					    		};
+			    			} else if (doAction == "edit") {
+			    				data = {
+			    					id : $("#id").val(),
+				    				colour : $("#modalColour").val(),
+				    				price : $("#modalPrice").val()
+					    		};
+			    			}
+				    		
+				    		modifySession(doAction, data);
+				    		refreshSessionTable();
+				    		$modal.modal("hide");
+			    		}
+			    	}
+			    });
+				
+				$("#btn-delete").click(function() {
+					var data = $("#table").bootstrapTable("getSelections");
+					var datatable = $.map(data, function(row) {
+						return row.id;
+					});
+					modifySession("delete", data);
+					refreshSessionTable();
+				});
+				
+			    $("#createItem").validate({
+			    	onkeyup : false,
+		            onfocusout : false,
+		            rules : {
+		            	article : {
+                    		isArticleExist : true	
+                    	}
+                    },
+			    	submitHandler : function(form) {
+			    		$("#modalConfText").text("Are you sure?");
+		            	$modalConfirmation.modal("show");
+		            	$("#confirmYes").click(function() {
+				    		var dataItemDesc = getAllData();
+				    		var data = {
+				    			article : $("#article").val(),
+				    			name : $("#name").val(),
+				    			unit : $("#unit").val(),
+				    			itemDesc : dataItemDesc
+				    		}
+				    		console.log(JSON.stringify(data));
+				    		
+				    		$.ajax({
+								type : "POST",
+								url  : /*[[@{/item/createItem}]]*/"",
+								data : JSON.stringify(data),
+								contentType : "application/json",
+								success : function(data) {
+									$("#modalConfSuccessText").text("Save success");
+									$saveSuccess.modal("show");
+									$("#btnCloseSuccess").click(function() {
+										window.location.assign(/*[[@{/item/create}]]*/"");
+									});
+								},
+								error : function(data) {
+									$("#modalConfFailedText").text("Save failed");
+									$saveFailed.modal("show");
+								}
+							})
+		            	});
+			    	}
+			    });
+		    });
+		    
+		    $('#modalColour').tooltip({title: "Colour is exist", placement: "bottom", trigger: "manual"});
+			
+		    window.actionEvents = {
+	            'click .search': function (e, value, row) {
+	            	e.preventDefault();
+	            	doAction = "edit";
+	            	$("#id").val(row.id);
+	            	$("#modalArticle").val($("#name").val());
+					$("#modalColour").val(row.colour);
+	            	$("#colourTemp").val(row.colour);
+					$("#modalPrice").val(row.price);
+					$("#modalColour").tooltip("hide");
+			        $modal.modal('show');
+	            }
+	        };
+		    
+		    jQuery.validator.addMethod("isArticleExist", function(value, element){
+				var response;
+				var article = $("#article").val();
+				$.ajax({
+					type: "GET",
+					url: /*[[@{/item/isArticleExist}]]*/"",
+					data: 'article='+article,
+					async: false,
+					success: function(data) {
+						response = data;
+					}
+				}); 
+				return response;
+			}, "Article Is Exist");
+		    
+		    function initTable() {
+		        $table.bootstrapTable();
+		    }
+		    
+		    function actionFormatter(value) {
+		        return '<a class="search" type="button" href=""><i class="glyphicon glyphicon-search"></i></a>';
+		    }
+		    
+		    function initSession() {
+				var URL = /*[[@{/item/itemDesc/create/initSession}]]*/"";
+				$.ajax({
+					type: "GET",
+					url: URL,
+					async: false,
+					complete: function(data) {
+						
+					}
+				});
+			}
+		    
+		    function modifySession(actionUrl, data){
+				var URL = /*[[@{/item/itemDesc/create/}]]*/"";
+				$.ajax({
+					type: "POST",
+					url: URL+actionUrl,
+					data: JSON.stringify(data),
+					contentType: "application/json",
+					async: false,
+					complete: function(data) {
+						
+					}
+				});
+			}
+			
+			function refreshSessionTable() {
+				var URL = /*[[@{/item/itemDesc/create/getTable}]]*/"";
+				$("#table").bootstrapTable("refresh", {
+					url: URL
+				});
+			}
+			
+			function getAllData() {
+				var itemDescData;
+				var URL = /*[[@{/item/itemDesc/create/getAllData}]]*/"";
+				$.ajax({
+					type: "GET",
+					url: URL,
+					async: false,
+					success: function(data) {
+						itemDescData = data;
+					}
+				});
+				return itemDescData;
+			}
+			
+			function reset() {
+				$("#modalArticle").val($("#name").val());
+				$("#modalColour").val("");
+				$("#modalPrice").val("");
+				$("#modalColour").tooltip("hide");
+			}
+			
+			function guid() {
+				function s4() {
+			    	return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+				}
+				return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+			}
+			
+			$(function () {
+				$('#table').DataTable();
+		        $('#modalTable').DataTable();
+			});
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

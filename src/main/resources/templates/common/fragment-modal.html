@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<th:block th:fragment="confirm">
+		<div class="modal fade" id="modalConfirmation" role="dialog" data-keyboard="false" data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" th:text="Confirmation"></h4>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-info text-center" th:inline="text">
+							<span class="glyphicon glyphicon-question-sign"></span>
+							<label class="control-label" id="modalConfText">Are you sure?</label>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="col-md-6">
+							<button type="button" class="btn btn-primary"
+								data-dismiss="modal" id="confirmYes" th:text="Yes"></button>
+						</div>
+						<div class="col-md-1">
+							<button type="button" class="btn btn-danger"
+								data-dismiss="modal" id="confirmNo" th:text="No"></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="save-success">
+		<div class="modal fade" id="saveSuccess" role="dialog" data-keyboard="false" data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" th:text="Success"></h4>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-success text-center" th:inline="text">
+							<span class="glyphicon glyphicon-ok"></span>
+							<label class="control-label" id="modalConfSuccessText">Save success</label>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default center-block"
+								data-dismiss="modal" id="btnCloseSuccess" th:text="Close"></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+	
+	<th:block th:fragment="save-failed">
+		<div class="modal fade" id="saveFailed" role="dialog" data-keyboard="false" data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" th:text="Failed"></h4>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-danger text-center" th:inline="text">
+							<span class="glyphicon glyphicon-remove"></span>
+							<label class="control-label" id="modalConfFailedText">Save failed</label>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default center-block"
+								data-dismiss="modal" id="btnCloseFailed" th:text="Close"></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+</body>
+</html>

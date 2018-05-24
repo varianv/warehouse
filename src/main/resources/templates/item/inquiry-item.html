@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+	<title>Warehouse - Inquiry Item</title>
+</head>
+<body class="hold-transition sidebar-mini">
+	<div th:fragment="content">
+		<div class="content-wrapper">
+			<section class="content-header">
+				<div class="container-fluid">
+					<div class="row mb-2">
+						<div class="col-sm-6">
+							<h1>Inquiry Item</h1>
+						</div>
+						<div class="col-sm-6">
+							<ol class="breadcrumb float-sm-right">
+								<li class="breadcrumb-item"><a href="#">Item</a></li>
+								<li class="breadcrumb-item active">Inquiry</li>
+							</ol>
+						</div>
+					</div>
+				</div><!-- /.container-fluid -->
+		    </section>
+		    <section class="content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card card-primary">
+								<div class="card-header">
+									<h3 class="card-title">Inquiry</h3>
+								</div>
+								<div class="card-body">
+									<div class="form-group row">
+										<label class="col-md-1 control-label">Article</label>
+										<div class="col-md-5">
+											<input class="form-control" type="text" id="article" name="article" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<label class="col-md-1 control-label">Name</label>
+										<div class="col-md-5">
+											<input class="form-control" type="text" id="name" name="name" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<label class="col-md-1 control-label">Unit</label>
+										<div class="col-md-5">
+											<input class="form-control" type="text" id="unit" name="unit" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+								    	<th:block th:replace="common/fragment-button :: btn-search-reset"></th:block>
+								    </div>
+								</div>
+						    </div>
+						</div>
+					</div>
+					
+					<div class="card card-info">
+						<div class="card-header">
+							<h3 class="card-title">Result List</h3>
+						</div>
+						<div class="card-body">
+							<table id="table" class="table table-bordered table-striped"
+						           data-show-refresh="true"
+						           data-show-toggle="true"
+						           data-show-columns="true"
+						           data-show-pagination-switch="true"
+						           data-pagination="true"
+						           data-id-field="id"
+						           data-page-list="[10, 25, 50, 100, ALL]"
+						           data-side-pagination="server"
+						           data-url="">
+								<thead>
+									<tr>
+										<th data-field="action" data-align="center" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+										<th data-field="article" data-align="center" data-sortable="true">Article</th>
+										<th data-field="name" data-align="center" data-sortable="true">Name</th>
+										<th data-field="unit" data-align="center" data-sortable="true">Unit</th>
+									</tr>
+								</thead>
+						    </table>
+					    </div>
+					</div>
+					
+					<div id="modal" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+				        <div class="modal-dialog">
+				            <div class="modal-content col-md-12">
+				                <div class="modal-header" style="font-weight: bold">
+				                	<button type="button" class="close"><span aria-hidden="true">&times;</span></button>
+				                    <h4 class="modal-title">Item Detail</h4>
+				                </div>
+				                <div class="panel panel-default">
+					                <table id="modalTable"
+								           data-show-refresh="true"
+								           data-show-toggle="true"
+								           data-show-columns="true"
+								           data-show-export="true"
+								           data-show-pagination-switch="true"
+								           data-pagination="true"
+								           data-id-field="id"
+								           data-page-list="[10, 25, 50, 100, ALL]"
+								           data-side-pagination="server"
+								           data-url="">
+										<thead>
+											<tr>
+												<th data-field="name" data-align="center" data-sortable="true">Item Name</th>
+												<th data-field="colour" data-align="center" data-sortable="true">Colour</th>
+												<th data-field="price" data-align="center" data-sortable="true">Price</th>
+											</tr>
+										</thead>
+								    </table>
+							    </div>
+				                <div class="modal-footer">
+				                    <th:block th:replace="common/fragment-button :: btn-back"></th:block>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+					
+					<script type="text/javascript" th:inline="javascript">
+					/*<![CDATA[*/
+					    var $table = $('#table'),
+					    	$modalTable = $('#modalTable'),
+					        $remove = $('#remove'),
+					        $modal = $('#modal').modal({show: false}),
+					        selections = [];
+						
+					    $(function () {
+							$('#table').DataTable();
+					        $('#modalTable').DataTable();
+						});
+					    
+					    $(".close, #btn-back-modal").click(function() {
+							$("#modal").modal("hide");
+						});
+					    
+					    $("#btn-search").click(function() {
+							var article = $("#article").val();
+							var name = $("#name").val();
+							var unit = $("#unit").val();
+							var searchURI = /*[[@{/item/inquiry/getItem}]]*/"";
+							var data = {
+								article: article,
+								name: name,
+								unit: unit
+							}
+							$("#table").bootstrapTable("refresh", {
+								url : searchURI+"?"+$.param(data)
+							});
+						});
+					    
+					    window.actionEvents = {
+				            'click .search': function (e, value, row) {
+				            	e.preventDefault();
+				            	var itemId = row.id;
+								var searchURI = /*[[@{/item/inquiry/getItemDesc}]]*/"";
+								var data = {
+									id: itemId
+								}
+								$("#modalTable").bootstrapTable("refresh", {
+									url : searchURI+"?"+$.param(data)
+								});
+						        $modal.modal('show');
+				            }
+				        };
+					    
+					    function actionFormatter(value) {
+					        return '<a class="search" type="button" href=""><i class="glyphicon glyphicon-search"></i></a>';
+					    }
+					/*]]>*/
+					</script>
+				</div>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

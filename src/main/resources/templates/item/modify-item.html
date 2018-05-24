@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:replace="layout :: header"></th:block>
+</head>
+<body>
+	<th:block th:replace="layout :: navbar"></th:block>
+	<th:block th:replace="layout :: sidebar"></th:block>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+				<div class="panel panel-default">
+					<h3 class="page-header" style="font-weight: bold">Modify Item</h3>
+					
+					<div class="form-group row">
+						<label class="col-md-1 control-label">Article</label>
+						<div class="col-md-5">
+							<input class="form-control" type="text" id="article" name="article" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label class="col-md-1 control-label">Name</label>
+						<div class="col-md-5">
+							<input class="form-control" type="text" id="name" name="name" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label class="col-md-1 control-label">Unit</label>
+						<div class="col-md-5">
+							<input class="form-control" type="text" id="unit" name="unit" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+				    	<th:block th:replace="layout :: btn-search-reset"></th:block>
+				    </div>
+				</div>
+				
+				<div class="panel panel-default">
+					<table id="table"
+				           data-show-refresh="true"
+				           data-show-toggle="true"
+				           data-show-columns="true"
+				           data-show-pagination-switch="true"
+				           data-pagination="true"
+				           data-id-field="id"
+				           data-page-list="[10, 25, 50, 100, ALL]"
+				           data-side-pagination="server"
+				           data-url="">
+						<thead>
+							<tr>
+								<th data-field="action" data-align="center" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+								<th data-field="article" data-align="center" data-sortable="true">Article</th>
+								<th data-field="name" data-align="center" data-sortable="true">Name</th>
+								<th data-field="unit" data-align="center" data-sortable="true">Unit</th>
+							</tr>
+						</thead>
+				    </table>
+			    </div>
+			</div>
+		</div>
+		
+		<div id="modalItem" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+	        <div class="modal-dialog">
+	            <div class="modal-content col-md-12">
+					<div class="modal-header">
+	                    <button type="button" class="close" id="closeBtnItem"><span aria-hidden="true">&times;</span></button>
+	                    <h4 class="modal-title">Modify Item</h4>
+	                </div>
+	            	<form id="modifyItem" method="POST">
+						<fieldset>
+							<div class="modal-body">
+								<div class="panel panel-default">
+									<div class="form-group row">
+										<label class="col-md-2 control-label">Article *</label>
+										<div class="col-md-7">
+											<input class="form-control" type="text" id="modalArticle" name="modalArticle" required="required" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<label class="col-md-2 control-label">Name *</label>
+										<div class="col-md-7">
+											<input class="form-control" type="text" id="modalName" name="modalName" required="required" />
+										</div>
+									</div>
+									
+									<div class="form-group row">
+										<label class="col-md-2 control-label">Unit *</label>
+										<div class="col-md-7">
+											<input class="form-control" type="text" id="modalUnit" name="modalUnit" required="required" />
+										</div>
+									</div>
+								</div>
+								
+				                <div class="panel panel-default">
+					                <table id="modalTableItemDetail"
+								           data-show-refresh="true"
+								           data-show-toggle="true"
+								           data-show-columns="true"
+								           data-show-pagination-switch="true"
+								           data-pagination="true"
+								           data-id-field="id"
+								           data-page-list="[10, 25, 50, 100, ALL]"
+								           data-side-pagination="server"
+								           data-url="">
+										<thead>
+											<tr>
+												<th data-field="state" data-checkbox="true"></th>
+												<th data-field="action" data-align="center" data-formatter="actionFormatterDesc" data-events="actionEventsModal">Action</th>
+												<th data-field="colour" data-align="center" data-sortable="true">Colour</th>
+												<th data-field="price" data-align="center" data-sortable="true">Price</th>
+											</tr>
+										</thead>
+								    </table>
+							    </div>
+							    <div class="form-group row">
+							    	<th:block th:replace="layout :: btn-add-delete"></th:block>
+							    </div>
+							    
+							    <div class="modal-footer">
+				                    <th:block th:replace="layout :: btn-validate-reset-back"></th:block>
+				                </div>
+			                </div>
+		                </fieldset>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <div id="modalDesc" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+	        <div class="modal-dialog">
+	            <div class="modal-content col-md-12">
+	            	<form id="modifyItemDesc" method="POST">
+						<fieldset>
+			                <div class="modal-header">
+			                <button type="button" class="close" id="closeBtnDesc"><span aria-hidden="true">&times;</span></button>
+			                    <h4 class="modal-title">Modify Item Detail</h4>
+			                </div>
+			                <div class="form-group row">
+								<label class="col-md-2 control-label">Item Name</label>
+								<div class="col-md-7">
+									<input class="form-control" type="text" id="modalItemName" name="itemName" readonly="readonly" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Colour *</label>
+								<div class="col-md-7">
+									<input class="form-control" type="text" id="modalColour" name="colour" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Price *</label>
+								<div class="col-md-7">
+									<input class="form-control" type="text" id="modalPrice" name="price" required="required" />
+								</div>
+							</div>
+			                <div class="modal-footer">
+			                    <th:block th:replace="layout :: btn-validate-reset-back-inside"></th:block>
+			                </div>
+			                <input type="hidden" id="id" name="id" />
+			                <input type="hidden" id="colourTemp" name="colourTemp" />
+			            </fieldset>
+			        </form>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <th:block th:replace="layout :: confirm"></th:block>
+	    <th:block th:replace="layout :: save-success"></th:block>
+	    <th:block th:replace="layout :: save-failed"></th:block>
+		
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		    var $table = $('#table'),
+		    	$modalTableItemDetail = $('#modalTableItemDetail'),
+		        $remove = $('#remove'),
+		        $modalItem = $('#modalItem').modal({show: false}),
+		        $modalDesc = $('#modalDesc').modal({show: false}),
+		        $modalConfirmation = $('#modalConfirmation').modal({show: false}),
+		        $saveSuccess = $('#saveSuccess').modal({show: false}),
+		        $saveFailed = $('#saveFailed').modal({show: false}),
+		        doAction = "",
+		        objectItem = null,
+		        objectDesc = null,
+		        deletedId = [];
+		        
+	        $(document).ready(function() {
+			    $modalTableItemDetail.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
+		            $('#btn-delete').prop('disabled', !$modalTableItemDetail.bootstrapTable('getSelections').length);
+		        });
+		    });
+	        
+		    $("#btn-search").click(function() {
+				var article = $("#article").val();
+				var name = $("#name").val();
+				var unit = $("#unit").val();
+				var searchURI = /*[[@{/item/inquiry/getItem}]]*/"";
+				var data = {
+					article: article,
+					name: name,
+					unit: unit
+				}
+				$("#table").bootstrapTable("refresh", {
+					url : searchURI+"?"+$.param(data)
+				});
+			});
+		    
+		    $("#btn-add").click(function() {
+				reset();
+				doAction = "add";
+				$modalDesc.modal("show");
+			});
+		    
+		    $("#closeBtnItem, #btn-back-modal").click(function() {
+		    	$modalItem.modal("hide");
+		    	$("#modalArticle").tooltip("hide");
+		    });
+		    
+		    $("#closeBtnDesc, #btn-back-modal-inside").click(function() {
+		    	$modalDesc.modal("hide");
+		    });
+		    
+		    $("#btn-reset-modal").click(function() {
+		    	$("#modalArticle").val(objectItem.article);
+		    	$("#modalName").val(objectItem.name);
+		    	$("#modalUnit").val(objectItem.unit);
+		    	$("#modalArticle").tooltip("hide");
+		    	$('#btn-delete').prop('disabled', true);
+		    	refreshSessionTable();
+		    });
+		    
+		    $("#btn-reset-modal-inside").click(function() {
+		    	$("#modalColour").val(objectDesc.colour);
+		    	$("#modalPrice").val(objectDesc.price);
+		    });
+		    
+		    $("#modalColour").change(function () {
+				$("#modalColour").tooltip("hide");
+			});
+		    
+		    $("#btn-delete").click(function() {
+		    	var data = $("#modalTableItemDetail").bootstrapTable("getSelections");
+		    	if(data.length > 0) {
+		    		for (i = 0; i < data.length; i++) {
+		    			deletedId.push(data[i].id);
+		    		}
+		    		modifySession("delete", data);
+					refreshSessionTable();
+		    	}
+		    });
+		    
+		    $('#modalColour').tooltip({title: "Colour is exist", placement: "bottom", trigger: "manual"});
+		    
+		    window.actionEvents = {
+	            'click .update': function (e, value, row) {
+	            	var selectedRowDetail;
+	            	e.preventDefault();
+	            	$("#modalArticle").val(row.article);
+	            	$("#modalName").val(row.name);
+	            	$("#modalUnit").val(row.unit);
+	            	
+	            	var itemId = row.id;
+					var searchURI = /*[[@{/item/inquiry/getItemDesc}]]*/"";
+					var data = {
+						id: itemId,
+						limit: 1000000
+					}
+					
+					$.ajax({
+						type: "GET",
+						url: searchURI+"?"+$.param(data),
+						async: false,
+						complete: function(data) {
+							selectedRowDetail = data.responseText;
+						}
+					});
+					
+					initSession();
+					modifySession("addAll", selectedRowDetail);
+					refreshSessionTable();
+					objectItem = row;
+			        $modalItem.modal("show");
+	            },
+	            'click .remove': function (e, value, row) {
+	            	e.preventDefault();
+	            	$("#modalConfText").text("Are you sure to delete article " + row.article + "?");
+	            	$modalConfirmation.modal("show");
+	            	
+	            	$("#confirmYes").click(function() {
+	            		var data = {
+	            			id: row.id
+	            		}
+	            		console.log(JSON.stringify(data));
+	            		$.ajax({
+							type : "POST",
+							url  : /*[[@{/item/deleteItem}]]*/"",
+							data : JSON.stringify(data),
+							contentType : "application/json",
+							success : function(data) {
+								$("#modalConfSuccessText").text("Delete success");
+								$saveSuccess.modal("show");
+								$("#btnCloseSuccess").click(function() {
+									window.location.assign(/*[[@{/item/modify}]]*/"");
+								});
+							},
+							error : function(data) {
+								$("#modalConfFailedText").text("Delete failed");
+								$saveFailed.modal("show");
+							}
+						});
+	            	});
+	            }
+	        };
+		    
+		    window.actionEventsModal = {
+	            'click .update': function (e, value, row) {
+	            	e.preventDefault();
+	            	doAction = "edit";
+	            	$("#id").val(row.id);
+	            	$("#modalItemName").val($("#modalName").val());
+	            	$("#modalColour").val(row.colour);
+	            	$("#colourTemp").val(row.colour);
+	            	$("#modalPrice").val(row.price);
+	            	objectDesc = row;
+			        $modalDesc.modal('show');
+	            }
+	        };
+		    
+		    $("#modifyItemDesc").validate({
+		    	submitHandler : function(form) {
+		    		var dataNow = getAllData();
+		    		var isColourExist = false;
+	    			
+		    		if ($("#colourTemp").val().toLowerCase() != $("#modalColour").val().toLowerCase()) {
+			    		for (i = 0; i < dataNow.length; i++) {
+			    			if (dataNow[i].colour.toLowerCase() == $("#modalColour").val().toLowerCase()) {
+			    				isColourExist = true;
+			    				$("#modalColour").tooltip("show");
+			    				break;
+			    			}
+			    		}
+		    		}
+		    		
+		    		if (!isColourExist) {
+		    			var data;
+		    			if (doAction == "add") {
+		    				data = {
+				    			id : guid(),
+			    				colour : $("#modalColour").val(),
+			    				price : $("#modalPrice").val()
+				    		};
+		    			} else if (doAction == "edit") {
+		    				data = {
+		    					id : $("#id").val(),
+			    				colour : $("#modalColour").val(),
+			    				price : $("#modalPrice").val()
+				    		};
+		    			}
+			    		
+			    		modifySession(doAction, data);
+			    		refreshSessionTable();
+			    		$modalDesc.modal("hide");
+		    		}
+		    	}
+		    });
+		    
+		    $("#modifyItem").validate({
+		    	onkeyup : false,
+	            onfocusout : false,
+	            rules : {
+	            	modalArticle : {
+                		isArticleExist : true
+                	}
+                },
+		    	submitHandler : function(form) {
+		    		$("#modalConfText").text("Are you sure?");
+	            	$modalConfirmation.modal("show");
+	            	$("#confirmYes").click(function() {
+	            		var dataItemDesc = getAllData();
+			    		var data = {
+			    			article : $("#modalArticle").val(),
+			    			name : $("#modalName").val(),
+			    			unit : $("#modalUnit").val(),
+			    			itemDesc : dataItemDesc,
+			    			deletedId : deletedId
+			    		}
+			    		console.log(JSON.stringify(data));
+			    		
+			    		$.ajax({
+							type : "POST",
+							url  : /*[[@{/item/createItem}]]*/"",
+							data : JSON.stringify(data),
+							contentType : "application/json",
+							success : function(data) {
+								$("#modalConfSuccessText").text("Save success");
+								$modalItem.modal("hide");
+								$saveSuccess.modal("show");
+								$("#btnCloseSuccess").click(function() {
+									window.location.assign(/*[[@{/item/modify}]]*/"");
+								});
+							},
+							error : function(data) {
+								$("#modalConfFailedText").text("Save failed");
+								$saveFailed.modal("show");
+							}
+						});
+	            	});
+		    	}
+		    });
+		    
+		    jQuery.validator.addMethod("isArticleExist", function(value, element){
+				var response = true;
+				var article = $("#modalArticle").val();
+				if (objectItem.article != article) {
+					$.ajax({
+						type : "GET",
+						url : /*[[@{/item/isArticleExist}]]*/"",
+						data : 'article='+article,
+						async : false,
+						success : function(data) {
+							response = data;
+						}
+					}); 
+				}
+				return response;
+			}, "Article Is Exist");
+		    
+		    function initTable() {
+		        $table.bootstrapTable();
+		        $modalTableItemDetail.bootstrapTable();
+		    }
+		    
+		    function actionFormatterDesc(value) {
+		        return '<a class="update" type="button" href=""><i class="glyphicon glyphicon-edit"></i></a>';
+		    }
+		    
+		    function actionFormatter(value) {
+		        return [
+		            '<a class="update" type="button" href=""><i class="glyphicon glyphicon-edit"></i></a>&nbsp;&nbsp;&nbsp;',
+		            '<a class="remove" type="button" href=""><i class="glyphicon glyphicon-remove"></i></a>',
+		        ].join('');
+		    }
+		    
+		    function initSession() {
+				var URL = /*[[@{/item/itemDesc/modify/initSession}]]*/"";
+				$.ajax({
+					type: "GET",
+					url: URL,
+					async: false,
+					complete: function(data) {
+						
+					}
+				});
+			}
+		    
+		    function modifySession(actionUrl, data){
+				var URL = /*[[@{/item/itemDesc/modify/}]]*/"";
+				if (actionUrl != "addAll") {
+					data = JSON.stringify(data);
+				}
+				$.ajax({
+					type: "POST",
+					url: URL+actionUrl,
+					data: data,
+					contentType: "application/json",
+					async: false,
+					complete: function(data) {
+						
+					}
+				});
+			}
+			
+			function refreshSessionTable() {
+				var URL = /*[[@{/item/itemDesc/modify/getTable}]]*/"";
+				$("#modalTableItemDetail").bootstrapTable("refresh", {
+					url: URL
+				});
+			}
+			
+			function getAllData() {
+				var itemDescData;
+				var URL = /*[[@{/item/itemDesc/modify/getAllData}]]*/"";
+				$.ajax({
+					type: "GET",
+					url: URL,
+					async: false,
+					success: function(data) {
+						itemDescData = data;
+					}
+				});
+				return itemDescData;
+			}
+		    
+		    function reset() {
+				$("#modalItemName").val($("#modalName").val());
+				$("#modalColour").val("");
+				$("#modalPrice").val("");
+				$("#modalColour").tooltip("hide");
+			}
+			
+			function guid() {
+				function s4() {
+			    	return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+				}
+				return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+			}
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

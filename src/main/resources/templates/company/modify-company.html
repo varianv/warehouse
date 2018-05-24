@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:replace="layout :: header"></th:block>
+</head>
+<body>
+	<th:block th:replace="layout :: navbar"></th:block>
+	<th:block th:replace="layout :: sidebar"></th:block>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+				<div class="panel panel-default">
+					<h3 class="page-header" style="font-weight: bold">Modify Company</h3>
+					
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Name</label>
+						<div class="col-md-4">
+							<input class="form-control" type="text" id="name" name="name" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Address</label>
+						<div class="col-md-4">
+							<input class="form-control" type="text" id="address" name="address" />
+						</div>
+					</div>
+					
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Phone Number</label>
+						<div class="col-md-4">
+							<input class="form-control" type="text" id="noPhone" name="noPhone" />
+						</div>
+					</div>
+				
+					<div class="form-group row">
+						<label class="col-md-2 control-label">Status</label>
+						<div class="col-md-4">
+							<select class="form-control" id="status"></select>
+						</div>
+					</div>
+				
+					<div class="form-group row">
+				    	<th:block th:replace="layout :: btn-search-reset"></th:block>
+				    </div>
+				</div>
+				
+				<div class="panel panel-default">
+				    <table id="table"
+				           data-show-refresh="true"
+				           data-show-toggle="true"
+				           data-show-columns="true"
+				           data-show-export="true"
+				           data-show-pagination-switch="true"
+				           data-pagination="true"
+				           data-id-field="id"
+				           data-page-list="[10, 25, 50, 100, ALL]"
+				           data-side-pagination="server"
+				           data-url="">
+						<thead>
+							<tr>
+								<th data-field="action" data-align="center" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+								<th data-field="name" data-align="center" data-sortable="true">Name</th>
+								<th data-field="address" data-align="center" data-sortable="true">Address</th>
+								<th data-field="noPhone" data-align="center" data-sortable="true">Phone Number</th>
+								<th data-field="status" data-align="center" data-sortable="true">Status</th>
+							</tr>
+						</thead>
+				    </table>
+			    </div>
+			</div>
+		</div>
+		
+		<div id="modal" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+	        <div class="modal-dialog">
+	            <div class="modal-content col-md-12">
+	            	<form id="modifyCompany" method="POST">
+						<fieldset>
+			                <div class="modal-header">
+			                <button type="button" class="close" id="closeBtnDesc"><span aria-hidden="true">&times;</span></button>
+			                    <h4 class="modal-title">Modify Company</h4>
+			                </div>
+			                <div class="form-group row">
+								<label class="col-md-2 control-label">Name *</label>
+								<div class="col-md-7">
+									<input class="form-control" type="text" id="modalName" name="name" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Address *</label>
+								<div class="col-md-7">
+									<input class="form-control" type="text" id="modalAddress" name="address" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Phone Number *</label>
+								<div class="col-md-7">
+									<input class="form-control" type="text" id="modalNoPhone" name="noPhone" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Status *</label>
+								<div class="col-md-4">
+									<select class="form-control" id="modalStatus" name="status"></select>
+								</div>
+							</div>
+			                <div class="modal-footer">
+			                    <th:block th:replace="layout :: btn-validate-reset-back-inside"></th:block>
+			                </div>
+			                <input type="hidden" id="id" name="id" />
+			            </fieldset>
+			        </form>
+	            </div>
+	        </div>
+	    </div>
+		
+	    <th:block th:replace="layout :: confirm"></th:block>
+	    <th:block th:replace="layout :: save-success"></th:block>
+	    <th:block th:replace="layout :: save-failed"></th:block>
+		
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		    var $table = $('#table'),
+		        $remove = $('#remove'),
+		        $modal = $("#modal"),
+		        $modalConfirmation = $('#modalConfirmation').modal({show: false}),
+		        $saveSuccess = $('#saveSuccess').modal({show: false}),
+		        $saveFailed = $('#saveFailed').modal({show: false}),
+		        selections = [],
+		        objectCompany = null;
+		
+		    function initTable() {
+		        $table.bootstrapTable();
+		    }
+		    
+			$(document).ready(function () {
+				getStatusAll();
+				getStatus();
+	    	});
+		    
+		    $("#btn-search").click(function() {
+				var name = $("#name").val();
+				var address = $("#address").val();
+				var noPhone = $("#noPhone").val();
+				var status = $("#status :selected").text();
+				var searchURI = /*[[@{/company/inquiry/getCompany}]]*/"";
+				var data = {
+					name: name,
+					address: address,
+					noPhone: noPhone,
+					status: status
+				}
+				$("#table").bootstrapTable("refresh", {
+					url : searchURI+"?"+$.param(data)
+				});
+			});
+		    
+		    $("#btn-reset").click(function() {
+		    	$("#id").val(objectCompany.id);
+            	$("#modalName").val(objectCompany.name);
+            	$("#modalAddress").val(objectCompany.address);
+            	$("#modalNoPhone").val(objectCompany.noPhone);
+            	$("#modalStatus option:contains(" + objectCompany.status + ")").attr('selected', 'selected')[0];
+            	$("#modalName").tooltip("hide");
+		    });
+		    
+		    $("#closeBtnDesc, #btn-back-modal-inside").click(function() {
+		    	$modal.modal("hide");
+		    });
+		    
+		    window.actionEvents = {
+	            'click .update': function (e, value, row) {
+	            	e.preventDefault();
+	            	$("#id").val(row.id);
+	            	$("#modalName").val(row.name);
+	            	$("#modalAddress").val(row.address);
+	            	$("#modalNoPhone").val(row.noPhone);
+	            	$("#modalStatus option:contains(" + row.status + ")").attr('selected', 'selected')[0];
+	            	objectCompany = row;
+			        $modal.modal('show');
+	            },
+	            'click .remove': function (e, value, row) {
+	            	e.preventDefault();
+	            	$("#modalConfText").text("Are you sure to delete company " + row.name + "?");
+	            	$modalConfirmation.modal("show");
+	            	
+	            	$("#confirmYes").click(function() {
+	            		var data = {
+	            			id: row.id
+	            		}
+	            		console.log(JSON.stringify(data));
+	            		$.ajax({
+							type : "POST",
+							url  : /*[[@{/company/deleteCompany}]]*/"",
+							data : JSON.stringify(data),
+							contentType : "application/json",
+							success : function(data) {
+								$("#modalConfSuccessText").text("Delete success");
+								$saveSuccess.modal("show");
+								$("#btnCloseSuccess").click(function() {
+									window.location.assign(/*[[@{/company/modify}]]*/"");
+								});
+							},
+							error : function(data) {
+								$("#modalConfFailedText").text("Delete failed");
+								$saveFailed.modal("show");
+							}
+						});
+	            	});
+	            }
+	        };
+		    
+		    $("#modifyCompany").validate({
+		    	onkeyup : false,
+	            onfocusout : false,
+	            rules : {
+	            	modalName : {
+                		isCompanyExist : true
+                	}
+                },
+		    	submitHandler : function(form) {
+		    		$("#modalConfText").text("Are you sure?");
+	            	$modalConfirmation.modal("show");
+	            	$("#confirmYes").click(function() {
+			    		var data = {
+			    			id : $("#id").val(),
+			    			name : $("#modalName").val(),
+			    			address : $("#modalAddress").val(),
+			    			noPhone : $("#modalNoPhone").val(),
+			    			status : $("#modalStatus :selected").text()
+			    		}
+			    		console.log(JSON.stringify(data));
+			    		
+			    		$.ajax({
+							type : "POST",
+							url  : /*[[@{/company/createCompany}]]*/"",
+							data : JSON.stringify(data),
+							contentType : "application/json",
+							success : function(data) {
+								$("#modalConfSuccessText").text("Save success");
+								$modal.modal("hide");
+								$saveSuccess.modal("show");
+								$("#btnCloseSuccess").click(function() {
+									window.location.assign(/*[[@{/company/modify}]]*/"");
+								});
+							},
+							error : function(data) {
+								$("#modalConfFailedText").text("Save failed");
+								$saveFailed.modal("show");
+							}
+						});
+	            	});
+		    	}
+		    });
+		    
+		    jQuery.validator.addMethod("isCompanyExist", function(value, element){
+				var response = true;
+				var name = $("#modalName").val();
+				if (objectCompany.name != name) {
+					$.ajax({
+						type: "GET",
+						url: /*[[@{/company/isCompanyExist}]]*/"",
+						data: 'name='+name,
+						async: false,
+						success: function(data) {
+							response = data;
+						}
+					});
+				}
+				return response;
+			}, "Company Name Is Exist");
+		    
+		    function actionFormatter(value) {
+		        return [
+		            '<a class="update" type="button" href=""><i class="glyphicon glyphicon-edit"></i></a>&nbsp;&nbsp;&nbsp;',
+		            '<a class="remove" type="button" href=""><i class="glyphicon glyphicon-remove"></i></a>',
+		        ].join('');
+		    }
+		    
+		    function getStatusAll() {
+		    	var url = /*[[@{/parameter/getParameterWithAll}]]*/"";
+		    	var name = "COMPANY_STATUS";
+		    	$.ajax({
+			    	type: "GET",
+					contentType: "application/json",
+					url: url+"?name="+name,
+			    	dataType: "json",
+			    	success: function (result) {
+		    			$.each(result, function (key, value) {
+		    				$("#status").append($("<option></option>").val(value.id).html(value.value));
+		    			});
+			    	}
+		    	});
+		    }
+		    
+		    function getStatus() {
+		    	var url = /*[[@{/parameter/getParameter}]]*/"";
+		    	var name = "COMPANY_STATUS";
+		    	$.ajax({
+			    	type: "GET",
+					contentType: "application/json",
+					url: url+"?name="+name,
+			    	dataType: "json",
+			    	success: function (result) {
+		    			$.each(result, function (key, value) {
+		    				$("#modalStatus").append($("<option></option>").val(value.id).html(value.value));
+		    			});
+			    	}
+		    	});
+		    }
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>

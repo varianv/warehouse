@@ -5,17 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-  <title>AdminLTE 3 | Dashboard 3</title>
-
   <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" th:href="@{/plugins/font-awesome/css/font-awesome.min.css}">
   <!-- IonIcons -->
   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" th:href="@{/plugins/datatables/dataTables.bootstrap4.min.css}">
   <!-- Theme style -->
-  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <link rel="stylesheet" th:href="@{/dist/css/adminlte.min.css}">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
+
+<head th:replace="${view} :: head"></head>
 <!--
 BODY TAG OPTIONS:
 =================
@@ -30,26 +32,27 @@ to get the desired effect
 <div class="wrapper">
 	<div th:replace="header :: header"></div>
 	<div th:replace="sidebar :: sidebar"></div>
-	<div class="content-wrapper">
-		<div th:include="${view} :: content"></div>
-	</div>
+	<!-- REQUIRED SCRIPTS -->
 
+	<!-- jQuery -->
+	<script th:src="@{/plugins/jquery/jquery.min.js}"></script>
+	<script th:src="@{/plugins/jquery/jquery.validate.min.js}"></script>
+	<!-- Bootstrap -->
+	<script th:src="@{/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<!-- AdminLTE -->
+	<script th:src="@{/dist/js/adminlte.js}"></script>
+	<!-- DataTables -->
+	<script th:src="@{/plugins/datatables/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/plugins/datatables/dataTables.bootstrap4.min.js}"></script>
+	
+	<!-- OPTIONAL SCRIPTS -->
+<!-- 	<script th:src="@{/plugins/chart.js/Chart.min.js}"></script> -->
+<!-- 	<script th:src="@{/dist/js/demo.js}"></script> -->
+<!-- 	<script th:src="@{/dist/js/pages/dashboard3.js}"></script> -->
+
+	<div th:replace="${view} :: content"></div>
 	<div th:replace="footer :: footer"></div>
 </div>
 <!-- ./wrapper -->
-
-<!-- REQUIRED SCRIPTS -->
-
-<!-- jQuery -->
-<script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE -->
-<script src="dist/js/adminlte.js"></script>
-
-<!-- OPTIONAL SCRIPTS -->
-<script src="plugins/chart.js/Chart.min.js"></script>
-<script src="dist/js/demo.js"></script>
-<script src="dist/js/pages/dashboard3.js"></script>
 </body>
 </html>

@@ -32,7 +32,7 @@ public class ThymeleafLayoutInterceptor extends HandlerInterceptorAdapter {
 		if (isRedirectOrForward(originalViewName)) {
 			return;
 		}
-		
+		System.out.println("originalViewName : " + originalViewName);
 		String layoutName = originalViewName;
 		if(handler instanceof HandlerMethod)
 			layoutName = getLayoutName(handler);

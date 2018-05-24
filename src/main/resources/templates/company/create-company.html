@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:replace="layout :: header"></th:block>
+</head>
+<body>
+	<th:block th:replace="layout :: navbar"></th:block>
+	<th:block th:replace="layout :: sidebar"></th:block>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+				<form id="createCompany" method="POST">
+					<fieldset>
+						<div class="panel panel-default">
+							<h3 class="page-header" style="font-weight: bold">Create Company</h3>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Name *</label>
+								<div class="col-md-4">
+									<input class="form-control" type="text" id="name" name="name" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Address *</label>
+								<div class="col-md-4">
+									<input class="form-control" type="text" id="address" name="address" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Phone Number *</label>
+								<div class="col-md-4">
+									<input class="form-control" type="text" id="noPhone" name="noPhone" required="required" />
+								</div>
+							</div>
+							
+							<div class="form-group row">
+								<label class="col-md-2 control-label">Status *</label>
+								<div class="col-md-4">
+									<select class="form-control" id="status" name="status" required="required"></select>
+								</div>
+							</div>
+						</div>
+						
+					    <th:block th:replace="layout :: btn-validate-reset"></th:block>
+		    		</fieldset>
+	    		</form>
+			</div>
+		</div>
+		
+	    <th:block th:replace="layout :: confirm"></th:block>
+	    <th:block th:replace="layout :: save-success"></th:block>
+	    <th:block th:replace="layout :: save-failed"></th:block>
+		
+		<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		    var $modalConfirmation = $('#modalConfirmation').modal({show: false}),
+		        $saveSuccess = $('#saveSuccess').modal({show: false}),
+		        $saveFailed = $('#saveFailed').modal({show: false});
+			
+		    $(document).ready(function() {
+		    	getDropdownStatus();
+		    	
+		    	$("#name").change(function() {
+		    		$("#name").tooltip("hide");
+		    	});
+		    	
+		    	$("#btn-reset").click(function() {
+		    		$("#name").tooltip("hide");
+		    	});
+		    	
+			    $("#createCompany").validate({
+			    	onkeyup : false,
+		            onfocusout : false,
+		            rules : {
+		            	name : {
+                    		isCompanyExist : true	
+                    	}
+                    },
+			    	submitHandler : function(form) {
+			    		$("#modalConfText").text("Are you sure?");
+		            	$modalConfirmation.modal("show");
+		            	$("#confirmYes").click(function() {
+				    		var data = {
+			    				name : $("#name").val(),
+			    				address : $("#address").val(),
+			    				noPhone : $("#noPhone").val(),
+			    				status : $("#status :selected").text()
+				    		}
+				    		console.log(JSON.stringify(data));
+				    		
+				    		$.ajax({
+								type : "POST",
+								url  : /*[[@{/company/createCompany}]]*/"",
+								data : JSON.stringify(data),
+								contentType : "application/json",
+								success : function(data) {
+									$("#modalConfSuccessText").text("Save success");
+									$saveSuccess.modal("show");
+									$("#btnCloseSuccess").click(function() {
+										window.location.assign(/*[[@{/company/create}]]*/"");
+									});
+								},
+								error : function(data) {
+									$("#modalConfFailedText").text("Save failed");
+									$saveFailed.modal("show");
+								}
+							})
+		            	});
+			    	}
+			    });
+		    });
+		    
+		    jQuery.validator.addMethod("isCompanyExist", function(value, element){
+				var response;
+				var name = $("#name").val();
+				$.ajax({
+					type: "GET",
+					url: /*[[@{/company/isCompanyExist}]]*/"",
+					data: 'name='+name,
+					async: false,
+					success: function(data) {
+						response = data;
+					}
+				}); 
+				return response;
+			}, "Company Name Is Exist");
+		    
+		    function getDropdownStatus() {
+		    	var url = /*[[@{/parameter/getParameter}]]*/"";
+		    	var name = "COMPANY_STATUS";
+		    	$.ajax({
+			    	type: "GET",
+					contentType: "application/json",
+					url: url+"?name="+name,
+			    	dataType: "json",
+			    	success: function (result) {
+		    			$.each(result, function (key, value) {
+		    				$("#status").append($("<option></option>").val(value.id).html(value.value));
+		    			});
+			    	},
+			    	error: function (result) {
+				    	
+		    		}
+		    	});
+		    }
+		/*]]>*/
+		</script>
+	</div>
+</body>
+</html>
